@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<database name="thinkup" type="MySQL - 5.1.57-3">
+   <tables>
+      <table name="tu_encoded_locations" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="short_name" nullable="false" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="full_name" nullable="false" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="latlng" nullable="false" remarks="" size="50" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="short_name" unique="false">
+            <column ascending="true" name="short_name"/>
+         </index>
+      </table>
+      <table name="tu_favorites" numRows="0" remarks="Favorite posts." type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="post_id" nullable="false" remarks="Post ID on a given network." size="50" type="VARCHAR">
+            <parent column="post_id" foreignKey="fk_tu_favorites_2" implied="false" onDeleteCascade="false" table="tu_posts"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="author_user_id" nullable="false" remarks="User ID of favorited post author on a given network." size="30" type="VARCHAR">
+            <parent column="user_id" foreignKey="fk_tu_favorites_1" implied="false" onDeleteCascade="false" table="tu_users"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="fav_of_user_id" nullable="false" remarks="User ID who favorited post on a given network." size="30" type="VARCHAR">
+            <parent column="user_id" foreignKey="fk_tu_favorites_3" implied="false" onDeleteCascade="false" table="tu_users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="3" name="network" nullable="false" remarks="Originating network in lower case, i.e., twitter or facebook." size="20" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="0" id="4" name="fav_timestamp" nullable="false" remarks="Time post was favorited." size="19" type="TIMESTAMP"/>
+         <index name="author_user_id" unique="false">
+            <column ascending="true" name="author_user_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+         <index name="fav_of_user_id" unique="false">
+            <column ascending="true" name="fav_of_user_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+         <index name="fk_tu_favorites_1" unique="false">
+            <column ascending="true" name="author_user_id"/>
+         </index>
+         <index name="fk_tu_favorites_2" unique="false">
+            <column ascending="true" name="post_id"/>
+         </index>
+         <index name="fk_tu_favorites_3" unique="false">
+            <column ascending="true" name="fav_of_user_id"/>
+         </index>
+         <index name="post_faving_user" unique="true">
+            <column ascending="true" name="post_id"/>
+            <column ascending="true" name="fav_of_user_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+         <index name="post_id" unique="false">
+            <column ascending="true" name="post_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+      </table>
+      <table name="tu_follower_count" numRows="0" remarks="Follower counts by date and time." type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="network_user_id" nullable="false" remarks="User ID on a particular service with a follower count." size="30" type="VARCHAR">
+            <parent column="user_id" foreignKey="fk_tu_follower_count_1" implied="false" onDeleteCascade="false" table="tu_users"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="network" nullable="false" remarks="Originating network in lower case, i.e., twitter or facebook." size="20" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="date" nullable="false" remarks="Date of follower count." size="10" type="DATE"/>
+         <column autoUpdated="false" digits="0" id="3" name="count" nullable="false" remarks="Total number of followers." size="10" type="INT"/>
+         <index name="fk_tu_follower_count_1" unique="false">
+            <column ascending="true" name="network_user_id"/>
+         </index>
+      </table>
+      <table name="tu_follows" numRows="0" remarks="Service user follow and friend relationships." type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="user_id" nullable="false" remarks="User ID on a particular service who has been followed." size="30" type="VARCHAR">
+            <parent column="user_id" foreignKey="fk_tu_follows_1" implied="false" onDeleteCascade="false" table="tu_users"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="follower_id" nullable="false" remarks="User ID on a particular service who has followed user_id." size="30" type="VARCHAR">
+            <parent column="user_id" foreignKey="fk_tu_follows_2" implied="false" onDeleteCascade="false" table="tu_users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="0" id="2" name="last_seen" nullable="false" remarks="Last time this relationship was seen on the originating network." size="19" type="TIMESTAMP"/>
+         <column autoUpdated="false" defaultValue="0000-00-00 00:00:00" digits="0" id="3" name="first_seen" nullable="false" remarks="First time this relationship was seen on the originating network." size="19" type="TIMESTAMP"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="4" name="active" nullable="false" remarks="Whether or not the relationship is active (1 if so, 0 if not.)" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="5" name="network" nullable="false" remarks="Originating network in lower case, i.e., twitter or facebook." size="20" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="6" name="debug_api_call" nullable="false" remarks="Developer-only field for storing the API URL source of this data point." size="255" type="VARCHAR"/>
+         <index name="active" unique="false">
+            <column ascending="true" name="network"/>
+            <column ascending="true" name="active"/>
+            <column ascending="true" name="last_seen"/>
+         </index>
+         <index name="fk_tu_follows_1" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+         <index name="fk_tu_follows_2" unique="false">
+            <column ascending="true" name="follower_id"/>
+         </index>
+         <index name="network" unique="false">
+            <column ascending="true" name="network"/>
+            <column ascending="true" name="last_seen"/>
+         </index>
+         <index name="user_id" unique="true">
+            <column ascending="true" name="network"/>
+            <column ascending="true" name="follower_id"/>
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="tu_hashtags" numRows="0" remarks="Hashtags captured in the datastore." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT">
+            <child column="hashtag_id" foreignKey="fk_tu_hashtags_posts_1" implied="false" onDeleteCascade="false" table="tu_hashtags_posts"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="hashtag" nullable="false" remarks="Hash tag, i.e., #thinkup." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="2" name="network" nullable="false" remarks="The network this hashtag appeared on in lower-case, e.g. twitter or facebook." size="20" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="3" name="count_cache" nullable="false" remarks="A count of times this hashtag was captured." size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="network_hashtag" unique="true">
+            <column ascending="true" name="network"/>
+            <column ascending="true" name="hashtag"/>
+         </index>
+      </table>
+      <table name="tu_hashtags_posts" numRows="0" remarks="Hashtags captured per post." type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="post_id" nullable="false" remarks="Post ID on a given network." size="50" type="VARCHAR">
+            <parent column="post_id" foreignKey="fk_tu_hashtags_posts_2" implied="false" onDeleteCascade="false" table="tu_posts"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="hashtag_id" nullable="false" remarks="Internal hashtag ID." size="10" type="INT">
+            <parent column="id" foreignKey="fk_tu_hashtags_posts_1" implied="false" onDeleteCascade="false" table="tu_hashtags"/>
+         </column>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="2" name="network" nullable="false" remarks="The network this post appeared on in lower-case, e.g. twitter or facebook." size="20" type="VARCHAR"/>
+         <index name="fk_tu_hashtags_posts_1" unique="false">
+            <column ascending="true" name="hashtag_id"/>
+         </index>
+         <index name="fk_tu_hashtags_posts_2" unique="false">
+            <column ascending="true" name="post_id"/>
+         </index>
+         <index name="hashtag_id" unique="false">
+            <column ascending="true" name="hashtag_id"/>
+         </index>
+         <index name="hashtag_post" unique="true">
+            <column ascending="true" name="hashtag_id"/>
+            <column ascending="true" name="post_id"/>
+         </index>
+         <index name="post_id" unique="false">
+            <column ascending="true" name="network"/>
+            <column ascending="true" name="post_id"/>
+         </index>
+      </table>
+      <table name="tu_instances" numRows="0" remarks="Authed network user for which ThinkUp archives data." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT">
+            <child column="id" foreignKey="fk_tu_instances_twitter_1" implied="false" onDeleteCascade="false" table="tu_instances_twitter"/>
+            <child column="instance_id" foreignKey="fk_tu_owner_instances_2" implied="false" onDeleteCascade="false" table="tu_owner_instances"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="network_user_id" nullable="false" remarks="User ID on a given network, like a user's Twitter ID or Facebook user ID." size="30" type="VARCHAR">
+            <parent column="user_id" foreignKey="fk_tu_instances_1" implied="false" onDeleteCascade="false" table="tu_users"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="network_viewer_id" nullable="false" remarks="Network user ID of the viewing user (which can affect permissions)." size="30" type="VARCHAR">
+            <parent column="user_id" foreignKey="fk_tu_instances_2" implied="false" onDeleteCascade="false" table="tu_users"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="3" name="network_username" nullable="false" remarks="Username on a given network, like a user's Twitter username or Facebook user name." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="last_post_id" nullable="false" remarks="Last network post ID fetched for this instance." size="50" type="VARCHAR">
+            <parent column="post_id" foreignKey="fk_tu_instances_3" implied="false" onDeleteCascade="false" table="tu_posts"/>
+         </column>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="0" id="5" name="crawler_last_run" nullable="false" remarks="The last time the crawler completed a run for this instance." size="19" type="TIMESTAMP"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="6" name="total_posts_by_owner" nullable="true" remarks="Total posts by this instance as reported by service API." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="7" name="total_posts_in_system" nullable="true" remarks="Total posts in datastore authored by this instance." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="8" name="total_replies_in_system" nullable="true" remarks="Total replies in datastore authored by this instance." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="9" name="total_follows_in_system" nullable="true" remarks="Total active follows where instance is the followed user." size="10" type="INT"/>
+         <column autoUpdated="false" digits="2" id="10" name="posts_per_day" nullable="true" remarks="Average posts per day by instance." size="7" type="DECIMAL"/>
+         <column autoUpdated="false" digits="2" id="11" name="posts_per_week" nullable="true" remarks="Average posts per week by instance." size="7" type="DECIMAL"/>
+         <column autoUpdated="false" digits="2" id="12" name="percentage_replies" nullable="true" remarks="Percent of an instance's posts which are replies." size="4" type="DECIMAL"/>
+         <column autoUpdated="false" digits="2" id="13" name="percentage_links" nullable="true" remarks="Percent of an instance's posts which contain links." size="4" type="DECIMAL"/>
+         <column autoUpdated="false" digits="0" id="14" name="earliest_post_in_system" nullable="true" remarks="Date and time of the earliest post authored by the instance in the datastore." size="19" type="DATETIME"/>
+         <column autoUpdated="false" digits="0" id="15" name="earliest_reply_in_system" nullable="true" remarks="Date and time of the earliest reply authored by the instance in the datastore." size="19" type="DATETIME"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="16" name="is_archive_loaded_replies" nullable="false" remarks="Whether or not all the instance's replies have been backfilled." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="17" name="is_archive_loaded_follows" nullable="false" remarks="Whether or not all the instance's follows have been backfilled." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="18" name="is_public" nullable="false" remarks="Whether or not instance is public in ThinkUp, that is, viewable when no ThinkUp user is logged in." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="19" name="is_active" nullable="false" remarks="Whether or not the instance user is being actively crawled (0 if it is paused)." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="20" name="network" nullable="false" remarks="The lowercase name of the source network, i.e., twitter or facebook." size="20" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="21" name="favorites_profile" nullable="true" remarks="Total instance favorites as reported by the service API." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="22" name="owner_favs_in_system" nullable="true" remarks="Total instance favorites saved in the datastore." size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="fk_tu_instances_1" unique="false">
+            <column ascending="true" name="network_user_id"/>
+         </index>
+         <index name="fk_tu_instances_2" unique="false">
+            <column ascending="true" name="network_viewer_id"/>
+         </index>
+         <index name="fk_tu_instances_3" unique="false">
+            <column ascending="true" name="last_post_id"/>
+         </index>
+         <index name="network_user_id" unique="false">
+            <column ascending="true" name="network_user_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+      </table>
+      <table name="tu_instances_twitter" numRows="0" remarks="Twitter-specific instance metadata." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT">
+            <parent column="id" foreignKey="fk_tu_instances_twitter_1" implied="false" onDeleteCascade="false" table="tu_instances"/>
+         </column>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="1" name="last_page_fetched_replies" nullable="false" remarks="Last page of replies fetched for this instance." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="2" name="last_page_fetched_tweets" nullable="false" remarks="Last page of tweets fetched for this instance." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="last_favorite_id" nullable="true" remarks="Last favorite post ID of the instance saved." size="50" type="VARCHAR">
+            <parent column="post_id" foreignKey="fk_tu_instances_twitter_2" implied="false" onDeleteCascade="false" table="tu_posts"/>
+         </column>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="4" name="last_unfav_page_checked" nullable="true" remarks="Last page of older favorites checked for backfilling." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="5" name="last_page_fetched_favorites" nullable="true" remarks="Last page of favorites fetched." size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="fk_tu_instances_twitter_1" unique="false">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="fk_tu_instances_twitter_2" unique="false">
+            <column ascending="true" name="last_favorite_id"/>
+         </index>
+      </table>
+      <table name="tu_invites" numRows="0" remarks="User invitation codes." type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="invite_code" nullable="true" remarks="" size="10" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="0" id="1" name="created_time" nullable="false" remarks="" size="19" type="TIMESTAMP"/>
+      </table>
+      <table name="tu_links" numRows="0" remarks="Links which appear in posts." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="url" nullable="false" remarks="Link URL as it appears inside the post, ie, shortened in tweets." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="expanded_url" nullable="false" remarks="Link URL expanded from its shortened form." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="title" nullable="false" remarks="Link title." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="description" nullable="false" remarks="Link description." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="image_src" nullable="false" remarks="URL of a thumbnail image associated with this link." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="6" name="caption" nullable="false" remarks="Link or image caption." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="7" name="clicks" nullable="false" remarks="Total known link clicks." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="8" name="post_id" nullable="false" remarks="ID of the post which this link appeared on a given network." size="50" type="VARCHAR">
+            <parent column="post_id" foreignKey="fk_tu_links_1" implied="false" onDeleteCascade="false" table="tu_posts"/>
+         </column>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="9" name="network" nullable="false" remarks="Network of the post in which the link appeared." size="20" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="" digits="0" id="10" name="error" nullable="false" remarks="Details of any error expanding a link." size="255" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="fk_tu_links_1" unique="false">
+            <column ascending="true" name="post_id"/>
+         </index>
+         <index name="post_id" unique="false">
+            <column ascending="true" name="post_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+         <index name="url" unique="true">
+            <column ascending="true" name="url"/>
+            <column ascending="true" name="post_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+      </table>
+      <table name="tu_mentions" numRows="0" remarks="Mentions captured per user. One row per user." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="user_id" nullable="false" remarks="The user ID inside the respective service, e.g. Twitter or Facebook user IDs." size="30" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="user_name" nullable="false" remarks="The user's name inside the respective service, e.g. Twitter or Facebook user name." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="3" name="network" nullable="false" remarks="The network that this post belongs to in lower-case, e.g. twitter or facebook." size="20" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="4" name="count_cache" nullable="false" remarks="A count of mentions a given user on a network has in the datastore." size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="fk_tu_mentions_1" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+         <index name="user_id" unique="true">
+            <column ascending="true" name="network"/>
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="tu_mentions_posts" numRows="0" remarks="Mentions captured per post." type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="post_id" nullable="false" remarks="Post ID on a given network." size="50" type="VARCHAR">
+            <parent column="post_id" foreignKey="fk_tu_mentions_posts_1" implied="false" onDeleteCascade="false" table="tu_posts"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="author_user_id" nullable="false" remarks="Author user ID of the post which contains the mention on a given network." size="30" type="VARCHAR">
+            <parent column="user_id" foreignKey="fk_tu_mentions_posts_2" implied="false" onDeleteCascade="false" table="tu_users"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="mention_id" nullable="false" remarks="Internal mention ID." size="10" type="INT">
+            <parent column="id" foreignKey="fk_tu_mentions_posts_3" implied="false" onDeleteCascade="false" table="tu_users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="3" name="network" nullable="false" remarks="The network which the mentioning post and mention comes from." size="20" type="VARCHAR"/>
+         <index name="author_user_id" unique="false">
+            <column ascending="true" name="author_user_id"/>
+         </index>
+         <index name="fk_tu_mentions_posts_1" unique="false">
+            <column ascending="true" name="post_id"/>
+         </index>
+         <index name="fk_tu_mentions_posts_2" unique="false">
+            <column ascending="true" name="author_user_id"/>
+         </index>
+         <index name="fk_tu_mentions_posts_3" unique="false">
+            <column ascending="true" name="mention_id"/>
+         </index>
+         <index name="mention_id" unique="false">
+            <column ascending="true" name="mention_id"/>
+         </index>
+         <index name="mention_post" unique="true">
+            <column ascending="true" name="mention_id"/>
+            <column ascending="true" name="post_id"/>
+         </index>
+         <index name="post_id" unique="false">
+            <column ascending="true" name="network"/>
+            <column ascending="true" name="post_id"/>
+         </index>
+      </table>
+      <table name="tu_options" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="option_id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="namespace" nullable="false" remarks="" size="50" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="option_name" nullable="false" remarks="" size="50" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="option_value" nullable="false" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="last_updated" nullable="false" remarks="" size="19" type="DATETIME"/>
+         <column autoUpdated="false" digits="0" id="5" name="created" nullable="false" remarks="" size="19" type="DATETIME"/>
+         <primaryKey column="option_id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="option_id"/>
+         </index>
+         <index name="name_key" unique="false">
+            <column ascending="true" name="option_name"/>
+         </index>
+         <index name="namespace_key" unique="false">
+            <column ascending="true" name="namespace"/>
+         </index>
+      </table>
+      <table name="tu_owner_instances" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="owner_id" nullable="false" remarks="" size="10" type="INT">
+            <parent column="id" foreignKey="fk_tu_owner_instances_1" implied="false" onDeleteCascade="false" table="tu_owners"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="instance_id" nullable="false" remarks="" size="10" type="INT">
+            <parent column="id" foreignKey="fk_tu_owner_instances_2" implied="false" onDeleteCascade="false" table="tu_instances"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="3" name="oauth_access_token" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="oauth_access_token_secret" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="fk_tu_owner_instances_1" unique="false">
+            <column ascending="true" name="owner_id"/>
+         </index>
+         <index name="fk_tu_owner_instances_2" unique="false">
+            <column ascending="true" name="instance_id"/>
+         </index>
+      </table>
+      <table name="tu_owners" numRows="0" remarks="ThinkUp user account details." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT">
+            <child column="owner_id" foreignKey="fk_tu_owner_instances_1" implied="false" onDeleteCascade="false" table="tu_owner_instances"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="full_name" nullable="false" remarks="User full name." size="200" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="pwd" nullable="true" remarks="Hash of the owner password" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="pwd_salt" nullable="false" remarks="Salt for securely hashing the owner password" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="email" nullable="false" remarks="User email." size="200" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="5" name="activation_code" nullable="false" remarks="User activation code." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00" digits="0" id="6" name="joined" nullable="false" remarks="Date user registered for an account." size="10" type="DATE"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="7" name="is_activated" nullable="false" remarks="If user is activated, 1 for true, 0 for false." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="8" name="is_admin" nullable="false" remarks="If user is an admin, 1 for true, 0 for false." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00" digits="0" id="9" name="last_login" nullable="false" remarks="Last time user logged into ThinkUp." size="10" type="DATE"/>
+         <column autoUpdated="false" digits="0" id="10" name="password_token" nullable="true" remarks="Password reset token." size="64" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="11" name="failed_logins" nullable="false" remarks="Current number of failed login attempts." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="" digits="0" id="12" name="account_status" nullable="false" remarks="Description of account status, i.e., &quot;Inactive due to excessive failed login attempts&quot;." size="150" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="13" name="api_key" nullable="false" remarks="Key to authorize API calls." size="32" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="email" unique="true">
+            <column ascending="true" name="email"/>
+         </index>
+      </table>
+      <table name="tu_places" numRows="0" remarks="Places on a given network." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="place_id" nullable="true" remarks="Place ID on a given network." size="100" type="VARCHAR">
+            <child column="place_id" foreignKey="fk_tu_places_posts_1" implied="false" onDeleteCascade="false" table="tu_places_posts"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="place_type" nullable="true" remarks="Type of place." size="100" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="name" nullable="true" remarks="Short name of a place." size="100" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="full_name" nullable="true" remarks="Full name of a place." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="country_code" nullable="true" remarks="Country code where the place is located." size="2" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="6" name="country" nullable="true" remarks="Country where the place is located." size="100" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="7" name="network" nullable="false" remarks="The network this place appears on in lower-case, e.g. twitter or facebook." size="20" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="8" name="longlat" nullable="true" remarks="Longitude/lattitude point." size="0" type="POINT"/>
+         <column autoUpdated="false" digits="0" id="9" name="bounding_box" nullable="true" remarks="Bounding box of place." size="0" type="POLYGON"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="place_id" unique="true">
+            <column ascending="true" name="place_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+      </table>
+      <table name="tu_places_posts" numRows="0" remarks="Place where a post was published from. One row per post." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="longlat" nullable="false" remarks="Longitude/lattitude point." size="0" type="POINT"/>
+         <column autoUpdated="false" digits="0" id="2" name="post_id" nullable="false" remarks="Post ID on a given network." size="50" type="VARCHAR">
+            <parent column="post_id" foreignKey="fk_tu_places_posts_2" implied="false" onDeleteCascade="false" table="tu_posts"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="3" name="place_id" nullable="true" remarks="Place ID on a given network." size="100" type="VARCHAR">
+            <parent column="place_id" foreignKey="fk_tu_places_posts_1" implied="false" onDeleteCascade="false" table="tu_places"/>
+         </column>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="4" name="network" nullable="false" remarks="The network this post appeared on in lower-case, e.g. twitter or facebook." size="20" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="fk_tu_places_posts_1" unique="false">
+            <column ascending="true" name="place_id"/>
+         </index>
+         <index name="fk_tu_places_posts_2" unique="false">
+            <column ascending="true" name="post_id"/>
+         </index>
+         <index name="post_id" unique="true">
+            <column ascending="true" name="network"/>
+            <column ascending="true" name="post_id"/>
+         </index>
+      </table>
+      <table name="tu_plugins" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="name" nullable="false" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="folder_name" nullable="false" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="description" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="author" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="homepage" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="6" name="version" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="7" name="is_active" nullable="false" remarks="" size="3" type="TINYINT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="tu_post_errors" numRows="0" remarks="Errors in response to requests for post information." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="post_id" nullable="false" remarks="Post ID on the originating service." size="50" type="VARCHAR">
+            <parent column="post_id" foreignKey="fk_tu_post_errors_1" implied="false" onDeleteCascade="false" table="tu_posts"/>
+         </column>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="2" name="network" nullable="false" remarks="Originating network in lower case, i.e., twitter or facebook." size="20" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="error_code" nullable="false" remarks="Error code issues from the service." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="4" name="error_text" nullable="false" remarks="Error text as supplied from the service." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="error_issued_to_user_id" nullable="false" remarks="User ID service issued error to." size="30" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="fk_tu_post_errors_1" unique="false">
+            <column ascending="true" name="post_id"/>
+         </index>
+         <index name="post_id" unique="false">
+            <column ascending="true" name="post_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+      </table>
+      <table name="tu_posts" numRows="0" remarks="Posts by service users on a given network." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID.." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="post_id" nullable="false" remarks="The ID of the post inside the respective service." size="50" type="VARCHAR">
+            <child column="post_id" foreignKey="fk_tu_favorites_2" implied="false" onDeleteCascade="false" table="tu_favorites"/>
+            <child column="post_id" foreignKey="fk_tu_hashtags_posts_2" implied="false" onDeleteCascade="false" table="tu_hashtags_posts"/>
+            <child column="last_post_id" foreignKey="fk_tu_instances_3" implied="false" onDeleteCascade="false" table="tu_instances"/>
+            <child column="last_favorite_id" foreignKey="fk_tu_instances_twitter_2" implied="false" onDeleteCascade="false" table="tu_instances_twitter"/>
+            <child column="post_id" foreignKey="fk_tu_links_1" implied="false" onDeleteCascade="false" table="tu_links"/>
+            <child column="post_id" foreignKey="fk_tu_mentions_posts_1" implied="false" onDeleteCascade="false" table="tu_mentions_posts"/>
+            <child column="post_id" foreignKey="fk_tu_places_posts_2" implied="false" onDeleteCascade="false" table="tu_places_posts"/>
+            <child column="post_id" foreignKey="fk_tu_post_errors_1" implied="false" onDeleteCascade="false" table="tu_post_errors"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="author_user_id" nullable="false" remarks="The user ID inside the respective service, e.g. Twitter or Facebook user IDs." size="30" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="author_username" nullable="false" remarks="The user's username inside the respective service, e.g. Twitter or Facebook user name." size="50" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="author_fullname" nullable="false" remarks="The user's real, full name on a given service, e.g. Gina Trapani." size="50" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="author_avatar" nullable="false" remarks="The URL to the user's avatar for a given service." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="6" name="author_follower_count" nullable="false" remarks="Post author's follower count. [Twitter-specific]" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="7" name="post_text" nullable="false" remarks="The textual content of a user's post on a given service." size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="8" name="is_protected" nullable="false" remarks="Whether or not this post is protected, e.g. not publicly visible." size="3" type="TINYINT"/>
+         <column autoUpdated="false" digits="0" id="9" name="source" nullable="true" remarks="The client used to publish this post, e.g. if you post from the Twitter web interface, this will be &quot;web&quot;." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="10" name="location" nullable="true" remarks="Author-level location, e.g., the author's location as set in his or her profile. Use author-level location if post-level location is not set." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="11" name="place" nullable="true" remarks="Post-level name of a place from which a post was published, ie, Woodland Hills, Los Angeles." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="12" name="place_id" nullable="true" remarks="Post-level place ID on a given network." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="13" name="geo" nullable="true" remarks="The post's latitude and longitude coordinates." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="14" name="pub_date" nullable="false" remarks="The UTC date/time when this post was published." size="19" type="DATETIME"/>
+         <column autoUpdated="false" digits="0" id="15" name="in_reply_to_user_id" nullable="true" remarks="The ID of the user that this post is in reply to." size="30" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="16" name="in_reply_to_post_id" nullable="true" remarks="The ID of the post that this post is in reply to." size="50" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="17" name="reply_count_cache" nullable="false" remarks="The total number of replies this post received in the data store." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="18" name="is_reply_by_friend" nullable="false" remarks="Whether or not this reply was authored by a friend of the original post's author." size="3" type="TINYINT"/>
+         <column autoUpdated="false" digits="0" id="19" name="in_retweet_of_post_id" nullable="true" remarks="The ID of the post that this post is a retweet of. [Twitter-specific]" size="50" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="20" name="old_retweet_count_cache" nullable="false" remarks="Manual count of old-style retweets as determined by ThinkUp. [Twitter-specific]" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="21" name="is_retweet_by_friend" nullable="false" remarks="Whether or not this retweet was posted by a friend of the original post's author. [Twitter-specific]" size="3" type="TINYINT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="22" name="reply_retweet_distance" nullable="false" remarks="The distance (in km) away from the post that this post is in reply or retweet of [Twitter-specific-ish]" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="23" name="network" nullable="false" remarks="The network that this post belongs to in lower-case, e.g. twitter or facebook" size="20" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="24" name="is_geo_encoded" nullable="false" remarks="Whether or not this post has been geo-encoded." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="25" name="in_rt_of_user_id" nullable="true" remarks="The ID of the user that this post is retweeting. [Twitter-specific]" size="30" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="26" name="retweet_count_cache" nullable="false" remarks="Manual count of native retweets as determined by ThinkUp. [Twitter-specific]" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="27" name="retweet_count_api" nullable="false" remarks="The total number of native retweets as reported by Twitter API. [Twitter-specific]" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="28" name="favlike_count_cache" nullable="false" remarks="The total number of favorites or likes this post received." size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="author_user_id" unique="false">
+            <column ascending="true" name="author_user_id"/>
+         </index>
+         <index name="author_username" unique="false">
+            <column ascending="true" name="author_username"/>
+         </index>
+         <index name="in_reply_to_post_id" unique="false">
+            <column ascending="true" name="in_reply_to_post_id"/>
+         </index>
+         <index name="in_reply_to_user_id" unique="false">
+            <column ascending="true" name="in_reply_to_user_id"/>
+         </index>
+         <index name="in_retweet_of_status_id" unique="false">
+            <column ascending="true" name="in_retweet_of_post_id"/>
+         </index>
+         <index name="is_protected" unique="false">
+            <column ascending="true" name="is_protected"/>
+         </index>
+         <index name="network" unique="false">
+            <column ascending="true" name="network"/>
+         </index>
+         <index name="post_fulltext" unique="false">
+            <column ascending="true" name="post_text"/>
+         </index>
+         <index name="post_id" unique="false">
+            <column ascending="true" name="post_id"/>
+         </index>
+         <index name="post_network" unique="true">
+            <column ascending="true" name="post_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+         <index name="pub_date" unique="false">
+            <column ascending="true" name="pub_date"/>
+         </index>
+      </table>
+      <table name="tu_stream_data" numRows="0" remarks="Unprocessed stream data. InnoDB for sel/del transactions." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="data" nullable="false" remarks="Raw stream data." size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="2" name="network" nullable="false" remarks="Originating network in lower case, i.e., twitter or facebook." size="20" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="tu_stream_procs" numRows="0" remarks="Running stream process details." type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="process_id" nullable="false" remarks="Stream process ID." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="email" nullable="false" remarks="Email address of the user running the stream process." size="100" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="instance_id" nullable="false" remarks="Internal instance ID receiving stream data." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="0" id="3" name="last_report" nullable="false" remarks="Process heartbeat's last beat time." size="19" type="TIMESTAMP"/>
+         <primaryKey column="process_id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="process_id"/>
+         </index>
+         <index name="owner_instance" unique="true">
+            <column ascending="true" name="email"/>
+            <column ascending="true" name="instance_id"/>
+         </index>
+      </table>
+      <table name="tu_user_errors" numRows="0" remarks="Errors in response to requests for user information." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="user_id" nullable="false" remarks="User ID on a particular service." size="30" type="VARCHAR">
+            <parent column="user_id" foreignKey="fk_tu_user_errors_1" implied="false" onDeleteCascade="false" table="tu_users"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="error_code" nullable="false" remarks="Error code issues from the service." size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="error_text" nullable="false" remarks="Error text as supplied from the service." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="error_issued_to_user_id" nullable="false" remarks="User ID service issued error to." size="19" type="BIGINT"/>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="5" name="network" nullable="false" remarks="Originating network in lower case, i.e., twitter or facebook." size="20" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="fk_tu_user_errors_1" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+         <index name="user_id" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="tu_users" numRows="0" remarks="Service user details." type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="Internal unique ID." size="10" type="INT">
+            <child column="mention_id" foreignKey="fk_tu_mentions_posts_3" implied="false" onDeleteCascade="false" table="tu_mentions_posts"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="user_id" nullable="false" remarks="User ID on a given network." size="30" type="VARCHAR">
+            <child column="author_user_id" foreignKey="fk_tu_favorites_1" implied="false" onDeleteCascade="false" table="tu_favorites"/>
+            <child column="fav_of_user_id" foreignKey="fk_tu_favorites_3" implied="false" onDeleteCascade="false" table="tu_favorites"/>
+            <child column="network_user_id" foreignKey="fk_tu_follower_count_1" implied="false" onDeleteCascade="false" table="tu_follower_count"/>
+            <child column="follower_id" foreignKey="fk_tu_follows_2" implied="false" onDeleteCascade="false" table="tu_follows"/>
+            <child column="user_id" foreignKey="fk_tu_follows_1" implied="false" onDeleteCascade="false" table="tu_follows"/>
+            <child column="network_user_id" foreignKey="fk_tu_instances_1" implied="false" onDeleteCascade="false" table="tu_instances"/>
+            <child column="network_viewer_id" foreignKey="fk_tu_instances_2" implied="false" onDeleteCascade="false" table="tu_instances"/>
+            <child column="author_user_id" foreignKey="fk_tu_mentions_posts_2" implied="false" onDeleteCascade="false" table="tu_mentions_posts"/>
+            <child column="user_id" foreignKey="fk_tu_user_errors_1" implied="false" onDeleteCascade="false" table="tu_user_errors"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="user_name" nullable="false" remarks="Username on a given network, like a user's Twitter username or Facebook user name." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="full_name" nullable="false" remarks="Full name on a given network." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="avatar" nullable="false" remarks="URL to user's avatar on a given network." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="location" nullable="true" remarks="Service user location." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="6" name="description" nullable="true" remarks="Service user description, like a Twitter user's profile description." size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="7" name="url" nullable="true" remarks="Service user's URL." size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="8" name="is_protected" nullable="false" remarks="Whether or not the user is public." size="0" type="BIT"/>
+         <column autoUpdated="false" digits="0" id="9" name="follower_count" nullable="false" remarks="Total number of followers a service user has." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="10" name="friend_count" nullable="false" remarks="Total number of friends a service user has." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="11" name="post_count" nullable="false" remarks="Total number of posts the user has authored." size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="0" id="12" name="last_updated" nullable="false" remarks="Last time this user's record was updated." size="19" type="TIMESTAMP"/>
+         <column autoUpdated="false" digits="0" id="13" name="found_in" nullable="true" remarks="What data source or API call the last update originated from (for developer debugging)." size="100" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0000-00-00 00:00:00" digits="0" id="14" name="last_post" nullable="false" remarks="The time of the latest post the user authored." size="19" type="TIMESTAMP"/>
+         <column autoUpdated="false" defaultValue="0000-00-00 00:00:00" digits="0" id="15" name="joined" nullable="false" remarks="When the user joined the network." size="19" type="TIMESTAMP"/>
+         <column autoUpdated="false" digits="0" id="16" name="last_post_id" nullable="false" remarks="Network post ID of the latest post the user authored." size="50" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="twitter" digits="0" id="17" name="network" nullable="false" remarks="Originating network in lower case, i.e., twitter or facebook." size="20" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="18" name="favorites_count" nullable="true" remarks="Total number of posts the user has favorited." size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="user_id" unique="true">
+            <column ascending="true" name="user_id"/>
+            <column ascending="true" name="network"/>
+         </index>
+      </table>
+   </tables>
+</database>

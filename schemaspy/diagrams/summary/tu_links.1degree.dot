@@ -1,0 +1,40 @@
+// dot 2.26.3 on Linux 3.0.0-1-amd64
+// SchemaSpy rev 590
+digraph "tu_links" {
+  graph [
+    rankdir="RL"
+    bgcolor="#f7f7f7"
+    nodesep="0.18"
+    ranksep="0.46"
+    fontname="Helvetica"
+    fontsize="11"
+  ];
+  node [
+    fontname="Helvetica"
+    fontsize="11"
+    shape="plaintext"
+  ];
+  edge [
+    arrowsize="0.8"
+  ];
+  "tu_links" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">tu_links</TD></TR>
+      <TR><TD PORT="id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD></TR>
+      <TR><TD PORT="url" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">url</TD></TR>
+      <TR><TD PORT="expanded_url" COLSPAN="3" ALIGN="LEFT">expanded_url</TD></TR>
+      <TR><TD PORT="title" COLSPAN="3" ALIGN="LEFT">title</TD></TR>
+      <TR><TD PORT="description" COLSPAN="3" ALIGN="LEFT">description</TD></TR>
+      <TR><TD PORT="image_src" COLSPAN="3" ALIGN="LEFT">image_src</TD></TR>
+      <TR><TD PORT="caption" COLSPAN="3" ALIGN="LEFT">caption</TD></TR>
+      <TR><TD PORT="clicks" COLSPAN="3" ALIGN="LEFT">clicks</TD></TR>
+      <TR><TD PORT="post_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">post_id</TD></TR>
+      <TR><TD PORT="network" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">network</TD></TR>
+      <TR><TD PORT="error" COLSPAN="3" ALIGN="LEFT">error</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="tables/tu_links.html"
+    tooltip="tu_links"
+  ];
+}
