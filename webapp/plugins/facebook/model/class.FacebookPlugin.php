@@ -88,6 +88,10 @@ class FacebookPlugin extends Plugin implements CrawlerPlugin, DashboardPlugin, P
             $crawler = new FacebookCrawler($instance, $access_token, $max_crawl_time);
             try {
                 $crawler->fetchPostsAndReplies();
+                // for pages, get external referrals
+                if ($instance->network == 'facebook page') {
+                   $crawler->fetchExternalReferrals();
+                }
             } catch (Exception $e) {
                 $logger->logUserError('EXCEPTION: '.$e->getMessage(), __METHOD__.','.__LINE__);
             }
@@ -158,6 +162,27 @@ class FacebookPlugin extends Plugin implements CrawlerPlugin, DashboardPlugin, P
         $trendtabmonthds->addHelp('userguide/listings/facebook/dashboard_followers-history');
         $trendtab->addDataset($trendtabmonthds);
         $menus['followers-history'] = $trendtab;
+
+        if ($instance->network == 'facebook page') {
+            $external_referrer_tpl = Utils::getPluginViewDirectory('facebook').'facebook.externalreferrercount.tpl';
+            $external_referrer_tab = new MenuItem("External Referrals", 'External domains referring traffic', $external_referrer_tpl, 'Views');
+
+            $external_referrer_day_ds = new Dataset("external_referrer_history_by_day", 'ExternalReferralCountDAO', "getHistory",
+              array($instance->network_user_id, $instance->network, 'DAY', 5, 30));
+            $external_referrer_tab->addDataset($external_referrer_day_ds);
+
+            $external_referrer_week_ds = new Dataset("external_referrer_history_by_week", 'ExternalReferralCountDAO', "getHistory",
+              array($instance->network_user_id, $instance->network, 'WEEK', 5, 25));
+            $external_referrer_tab->addDataset($external_referrer_week_ds);
+
+            $external_referrer_month_ds = new Dataset("external_referrer_history_by_month", 'ExternalReferralCountDAO', "getHistory",
+              array($instance->network_user_id, $instance->network, 'MONTH', 5, 24));
+            $external_referrer_tab->addDataset($external_referrer_month_ds);
+
+            $external_referrer_month_ds->addHelp('userguide/listings/facebook/dashboard_external-referrers');
+
+            $menus["external-referrers"] = $external_referrer_tab;
+        }
 
         return $menus;
     }

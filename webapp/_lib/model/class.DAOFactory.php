@@ -140,6 +140,14 @@ class DAOFactory {
         'FollowerCountDAO' => array(
     //MySQL Version
             'mysql' => 'FollowerCountMySQLDAO'),
+    //Domain MySQL DAO
+        'DomainDAO' => array(
+    //MySQL Version
+            'mysql' => 'DomainMySQLDAO'),
+    //External Referral Count MySQL DAO
+        'ExternalReferralCountDAO' => array(
+    //MySQL Version
+            'mysql' => 'ExternalReferralCountMySQLDAO'),
     //Installer MySQL DAO
         'InstallerDAO' => array (
     //MySQL Version

@@ -13,6 +13,22 @@
   <link type="text/css" rel="stylesheet" href="{$site_root_path}assets/css/jquery-ui-1.7.1.custom.css">
   <script type="text/javascript" src="{$site_root_path}assets/js/jquery.min-1.4.js"></script>
   <script type="text/javascript" src="{$site_root_path}assets/js/jquery-ui.min-1.8.js"></script>
+
+  <!-- ccc -->
+  <!--[if lt IE 9]>
+  <script type="text/javascript" src="{$site_root_path}assets/js/extlib/svgweb/svg.js" data-path="{$site_root_path}assets/js/extlib/svgweb/"></script>
+  <![endif]-->
+  <meta name="svg.render.forceflash" content="true">
+  <script type="text/javascript" src="{$site_root_path}assets/js/ccc-base.js"></script>
+  <script type="text/javascript" src="{$site_root_path}assets/js/jquery.tooltip.js"></script>
+  <script type="text/javascript" src="{$site_root_path}assets/js/protovis-d3.3.js"></script>
+  <script type="text/javascript" src="{$site_root_path}assets/js/jquery.tipsy.js"></script>
+  <script type="text/javascript" src="{$site_root_path}assets/js/tipsy.js"></script>
+  <link type="text/css" href="{$site_root_path}assets/css/tipsy.css" rel="stylesheet"/>
+  <script type="text/javascript" src="{$site_root_path}assets/js/pvc-d1.0.js"></script>
+  <link type="text/css" rel="stylesheet" href="{$site_root_path}assets/css/jquery.tooltip.css"/>
+
+
   <script type="text/javascript" src="{$site_root_path}plugins/twitter/assets/js/widgets.js"></script>
   <script type="text/javascript">var site_root_path = '{$site_root_path}';</script>
   {if $csrf_token}<script type="text/javascript">var csrf_token = '{$csrf_token}';</script>{/if}
