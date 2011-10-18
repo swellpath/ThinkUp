@@ -309,6 +309,46 @@ class TestOfFacebookCrawler extends ThinkUpUnitTestCase {
         $this->assertEqual($data[0]['count'], 307758);
     }
 
+    public function testFetchExternalReferralsNoPosts() {
+        $fbc = new FacebookCrawler($this->page1_instance, 'fauxaccesstoken', 10);
+        $fbc->fetchExternalReferrals();
+
+        $domain_dao = new DomainMySQLDAO();
+        $this->assertTrue($domain_dao->domainExists('www.example.com'));
+
+        $referral_dao = new ExternalReferralCountMySQLDAO();
+        $earliest = $referral_dao->getEarliest($this->page1_instance->id);
+        $this->assertEqual($earliest, 1285830000);
+
+        // Test FollowerCount is set
+        $sql = sprintf("SELECT COUNT(*) AS count FROM %s%s WHERE instance_id = %d",
+          $this->table_prefix, "referrals", $this->page1_instance->id);
+
+        $stmt = ExternalReferralCountMySQLDAO::$PDO->query($sql);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        $this->assertEqual($row['count'], 3);
+    }
+
+    public function testFetchExternalReferralsWithPosts() {
+        $fbc = new FacebookCrawler($this->page1_instance, 'fauxaccesstoken', 10);
+        $fbc->fetchPostsAndReplies();
+        $fbc->fetchExternalReferrals();
+
+        $referral_dao = new ExternalReferralCountMySQLDAO();
+        $earliest = $referral_dao->getEarliest($this->page1_instance->id);
+        $this->assertEqual($earliest, 1285743600);
+
+        // Test FollowerCount is set
+        $sql = sprintf("SELECT COUNT(*) AS count FROM %s%s WHERE instance_id = %d",
+          $this->table_prefix, "referrals", $this->page1_instance->id);
+
+        $stmt = ExternalReferralCountMySQLDAO::$PDO->query($sql);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        $this->assertEqual($row['count'], 4);
+    }
+
     public function testPostReplyPaging() {
         $fbc = new FacebookCrawler($this->page2_instance, 'fauxaccesstoken', 10);
 

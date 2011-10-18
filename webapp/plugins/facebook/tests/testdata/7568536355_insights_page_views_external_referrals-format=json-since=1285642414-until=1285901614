@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "id": "137079890122/insights/page_views_external_referrals/day", 
+      "name": "page_views_external_referrals", 
+      "period": "day", 
+      "values": [
+        {
+          "value": [
+          ], 
+          "end_time": "2010-09-28T07:00:00+0000"
+        }, 
+        {
+          "value": [
+          ], 
+          "end_time": "2010-09-29T07:00:00+0000"
+        }, 
+        {
+          "value": {
+              "www.example.com": 1
+          }, 
+          "end_time": "2010-09-30T07:00:00+0000"
+        }
+      ], 
+      "description": "Daily Top referrering external domains sending traffic to your Page. (Total Count)"
+    }
+  ], 
+  "paging": {
+    "previous": "https://graph.facebook.com/137079890122/insights/page_views_external_referrals?format=json&since=1285383214&until=1285642414", 
+    "next": "https://graph.facebook.com/137079890122/insights/page_views_external_referrals?format=json&since=1285901614&until=1286160814"
+  }
+}
