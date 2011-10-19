@@ -69,6 +69,29 @@ class FollowerCountMySQLDAO extends PDODAO implements FollowerCountDAO {
         $ps = $this->execute($q, $vars);
         $history_rows = $this->getDataRowsAsArrays($ps);
 
+        $resultset = array();
+        switch ($network) {
+        case 'facebook':
+            $follower_description = 'Friends';
+            break;
+        case 'facebook page':
+            $follower_description = 'Fans';
+            break;
+        case 'twitter':
+        default:
+            $follower_description = 'Followers';
+            break;
+        }
+        foreach ($history_rows as $row) {
+          $resultset[] = array($follower_description, $row['full_date'], $row['count']);
+        }
+        $metadata = array(
+          array('colIndex' => 0, 'colType' => 'String', 'colName' => 'Series'),
+          array('colIndex' => 1, 'colType' => 'String', 'colName' => 'Categories'),
+          array('colIndex' => 2, 'colType' => 'Numeric', 'colName' => 'Value'),
+        );
+        $ccc_data = json_encode(array('resultset' => $resultset, 'metadata' => $metadata));
+
         if (sizeof($history_rows) > 1 ) {
             //break down rows into a simpler date=>count assoc array
             $simplified_history = array();
@@ -153,7 +176,7 @@ class FollowerCountMySQLDAO extends PDODAO implements FollowerCountDAO {
             $min_count = false;
         }
         return array('history'=>$history, 'percentages'=>$percentages, 'y_axis'=>$y_axis, 'trend'=>$trend,
-        'milestone'=> $milestone, 'max_count'=>$max_count, 'min_count'=>$min_count);
+        'milestone'=> $milestone, 'max_count'=>$max_count, 'min_count'=>$min_count, 'ccc_data' => $ccc_data);
     }
 
     /**
