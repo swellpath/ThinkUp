@@ -49,18 +49,22 @@ class FollowerCountMySQLDAO extends PDODAO implements FollowerCountDAO {
         }
         if ($units == 'DAY') {
             $group_by = 'fc.date';
+            $date_format = '%b %e';
         } else if ($units == 'WEEK') {
             $group_by = 'YEAR(fc.date), WEEK(fc.date)';
+            $date_format = '%b %e';
         } else if ($units == 'MONTH') {
             $group_by = 'YEAR(fc.date), MONTH(fc.date)';
+            $date_format = "%b '%y";
         }
-        $q = "SELECT network_user_id, network, count, date, full_date FROM ";
-        $q .= "(SELECT network_user_id, network, count, DATE_FORMAT(date, '%c/%e') as date, date as full_date ";
+        $q = "SELECT network_user_id, network, count, pretty_date, full_date FROM ";
+        $q .= "(SELECT network_user_id, network, count, DATE_FORMAT(date, :date_format) as pretty_date, date as full_date ";
         $q .= "FROM #prefix#follower_count AS fc ";
         $q .= "WHERE fc.network_user_id = :network_user_id AND fc.network=:network ";
         $q .= "GROUP BY ".$group_by." ORDER BY full_date DESC LIMIT :limit ) as history_counts ";
         $q .= "ORDER BY history_counts.full_date ASC";
         $vars = array(
+            ':date_format'=> $date_format,
             ':network_user_id'=>(string) $network_user_id,
             ':network'=>$network,
             ':limit'=>(int)$limit
@@ -86,7 +90,7 @@ class FollowerCountMySQLDAO extends PDODAO implements FollowerCountDAO {
             $timestamp = strtotime($row['full_date']);
             $resultset[] = array('c' => array(
                 array('v' => sprintf('new Date(%d,%d,%d)', date('Y', $timestamp), date('n', $timestamp) - 1,
-                date('j', $timestamp)), 'f' => $row['date']),
+                date('j', $timestamp)), 'f' => $row['pretty_date']),
                 array('v' => intval($row['count']))
             ));
         }
@@ -104,7 +108,7 @@ class FollowerCountMySQLDAO extends PDODAO implements FollowerCountDAO {
             //break down rows into a simpler date=>count assoc array
             $simplified_history = array();
             foreach ($history_rows as $history_row) {
-                $simplified_history[$history_row["date"]] = $history_row["count"];
+                $simplified_history[$history_row["pretty_date"]] = $history_row["count"];
             }
 
             $trend = false;

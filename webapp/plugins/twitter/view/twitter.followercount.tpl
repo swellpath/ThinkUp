@@ -9,21 +9,24 @@
     </p>
     {/if}
 
-<h2>{if $follower_count_history_by_day.trend}({if $follower_count_history_by_day.trend > 0}<span style="color:green">+{else}<span style="color:red">{/if}{$follower_count_history_by_day.trend|number_format}</span>/day){/if}</h2>
+<h2>{if $instance->network eq 'twitter'}Followers{elseif $instance->network eq 'facebook page'}Fans{elseif $instance->network eq 'facebook'}Friends{/if} Count By Day
+{if $follower_count_history_by_day.trend}({if $follower_count_history_by_day.trend > 0}<span style="color:green">+{else}<span style="color:red">{/if}{$follower_count_history_by_day.trend|number_format}</span>/day){/if}</h2>
 <div id="follower_count_history_by_day"></div>
 
 {if $follower_count_history_by_day.milestone}
     <br /><small style="color:gray">NEXT MILESTONE: <span style="background-color:#FFFF80;color:black">{$follower_count_history_by_day.milestone.will_take} day{if $follower_count_history_by_day.milestone.will_take > 1}s{/if}</span> till you reach <span style="background-color:#FFFF80;color:black">{$follower_count_history_by_day.milestone.next_milestone|number_format} followers</span> at this rate.</small>
 {/if}
 
-<h2>{if $follower_count_history_by_week.trend != 0}({if $follower_count_history_by_week.trend > 0}<span style="color:green">+{else}<span style="color:red">{/if}{$follower_count_history_by_week.trend|number_format}</span>/week){/if}</h2>
+<h2>{if $instance->network eq 'twitter'}Followers{elseif $instance->network eq 'facebook page'}Fans{elseif $instance->network eq 'facebook'}Friends{/if} Count By Week
+{if $follower_count_history_by_week.trend != 0}({if $follower_count_history_by_week.trend > 0}<span style="color:green">+{else}<span style="color:red">{/if}{$follower_count_history_by_week.trend|number_format}</span>/week){/if}</h2>
 <div id="follower_count_history_by_week"></div>
 
     {if $follower_count_history_by_week.milestone}
 <br /><small style="color:gray">NEXT MILESTONE: <span style="background-color:#FFFF80;color:black">{$follower_count_history_by_week.milestone.will_take} week{if $follower_count_history_by_week.milestone.will_take > 1}s{/if}</span> till you reach <span style="background-color:#FFFF80;color:black">{$follower_count_history_by_week.milestone.next_milestone|number_format} followers</span> at this rate.</small>
 {/if}
 
-<h2>{if $follower_count_history_by_month.trend != 0}({if $follower_count_history_by_month.trend > 0}<span style="color:green">+{else}<span style="color:red">{/if}{$follower_count_history_by_month.trend|number_format}</span>/month){/if}</h2>
+<h2>{if $instance->network eq 'twitter'}Followers{elseif $instance->network eq 'facebook page'}Fans{elseif $instance->network eq 'facebook'}Friends{/if} Count By Month
+{if $follower_count_history_by_month.trend != 0}({if $follower_count_history_by_month.trend > 0}<span style="color:green">+{else}<span style="color:red">{/if}{$follower_count_history_by_month.trend|number_format}</span>/month){/if}</h2>
 <div id="follower_count_history_by_month"></div>
 
 {if $follower_count_history_by_month.milestone}
@@ -53,7 +56,8 @@ function drawCharts() {
         dataTable: follower_count_history_by_day_data,
         options: {
             title: 'Follower Count By Day',
-            width: 600,
+            titlePosition: 'none',
+            width: 710,
             height: 250,
             legend: "top",
             interpolateNulls: true,
@@ -70,7 +74,8 @@ function drawCharts() {
         dataTable: follower_count_history_by_week_data,
         options: {
             title: 'Follower Count By Week',
-            width: 600,
+            titlePosition: 'none',
+            width: 710,
             height: 250,
             legend: "top",
             interpolateNulls: true,
@@ -87,7 +92,8 @@ function drawCharts() {
         dataTable: follower_count_history_by_month_data,
         options: {
             title: 'Follower Count By Month',
-            width: 600,
+            titlePosition: 'none',
+            width: 710,
             height: 250,
             legend: "top",
             interpolateNulls: true,

@@ -103,6 +103,7 @@
               {if $hot_posts|@count > 3}
                   <div class="clearfix">
                       <!-- show retweets and replies for twitter; show favorites and replies for others -->
+                      <h2>Recent Activity</h2>
                       <div id="hot_posts">
                   </div>
               {/if}
@@ -131,12 +132,14 @@
               {if $follower_count_history_by_day.history && $follower_count_history_by_week.history}
                 <div class="clearfix">
                   <div class="grid_9 alpha">
+                    <h2>{if $instance->network eq 'twitter'}Followers{elseif $instance->network eq 'facebook page'}Fans{elseif $instance->network eq 'facebook'}Friends{/if} Count By Day
+                    {if $follower_count_history_by_day.trend}({if $follower_count_history_by_day.trend > 0}<span style="color:green">+{else}<span style="color:red">{/if}{$follower_count_history_by_day.trend|number_format}</span>/day){/if}</h2>
                     <div id="follower_count_history_by_day"></div>
-                    {if $follower_count_history_by_day.trend}({if $follower_count_history_by_day.trend > 0}<span style="color:green">+{else}<span style="color:red">{/if}{$follower_count_history_by_day.trend|number_format}</span>/day){/if}
                   </div>
                   <div class="grid_9 omega">
+                    <h2>{if $instance->network eq 'twitter'}Followers{elseif $instance->network eq 'facebook page'}Fans{elseif $instance->network eq 'facebook'}Friends{/if} Count By Week
+                    {if $follower_count_history_by_week.trend != 0}({if $follower_count_history_by_week.trend > 0}<span style="color:green">+{else}<span style="color:red">{/if}{$follower_count_history_by_week.trend|number_format}</span>/week){/if}</h2>
                     <div id="follower_count_history_by_week"></div>
-                    {if $follower_count_history_by_week.trend != 0}({if $follower_count_history_by_week.trend > 0}<span style="color:green">+{else}<span style="color:red">{/if}{$follower_count_history_by_week.trend|number_format}</span>/week){/if}
                   </div>
                 </div>
                 <script type="text/javascript">
@@ -165,6 +168,7 @@
                       dataTable: follower_count_history_by_day_data,
                       options: {
                           title: follower_description + ' Count By Day',
+                          titlePosition: 'none',
                           titleTextStyle: {color: '#848884', fontSize: 16},
                           width: 350,
                           height: 250,
@@ -183,6 +187,7 @@
                       dataTable: follower_count_history_by_week_data,
                       options: {
                           title: follower_description + ' Count By Week',
+                          titlePosition: 'none',
                           titleTextStyle: {color: '#848884', fontSize: 16},
                           width: 350,
                           height: 250,
@@ -228,17 +233,18 @@
                       options: {
                           title: 'Recent Activity',
                           titleTextStyle: {color: '#848884', fontSize: 19},
+                          titlePosition: 'none',
                           isStacked: true,
-                          width: 700,
+                          width: 710,
                           height: 300,
                           legend: 'right',
                           hAxis: {
                             minValue: 0,
                           },
                           vAxis: {
-                            textStyle:  {fontSize: 9},
+                            textStyle:  {fontSize: 10, font: 'Arial'},
                           },
-                          chartArea:{width:"40%"}
+                          chartArea:{width:"50%", height: "80%"}
                       }
                   });
                   hot_posts_chart.draw();
