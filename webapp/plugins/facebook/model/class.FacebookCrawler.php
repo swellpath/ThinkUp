@@ -192,6 +192,76 @@ class FacebookCrawler {
         }
     }
 
+    /*
+     * Fetch and save the active user counts
+     */
+    public function fetchActiveUsers($recreate_all_history = false) {
+        $id = $this->instance->network_user_id;
+        $network = $this->instance->network;
+
+        $fetch_prev_page = true;
+        $current_page_number = 1;
+
+        // We can get up to 35 days (3024000 seconds) of data at once; getting default of 3 days for now
+        $next_api_request = 'https://graph.facebook.com/' .$id. '/insights/page_active_users/?access_token='
+        . $this->access_token;
+
+        //Cap crawl time for very busy pages with thousands of likes/comments
+        $fetch_stop_time = time() + $this->max_crawl_time;
+
+        $active_users_dao = DAOFactory::getDAO('ActiveUsersCountDAO');
+
+        // Latest referral data we have captured
+        $latest_captured = $active_users_dao->getLatest($this->instance->id);
+
+        //Determine time of oldest post in datastore
+        $post_dao = DAOFactory::getDAO('PostDAO');
+        $since_post = $post_dao->getAllPosts($id, $network, 1, 1, true, 'pub_date', 'ASC');
+        $first_post = isset($since_post[0]) ? $since_post[0]->pub_date : 0;
+        $first_post = strtotime($first_post) - (60 * 60 * 24); // last post minus one day, just to be safe
+        $first_post = $first_post < 0 ? 0 : $first_post;
+
+        // Get most recent data first.  Then backfill to date of first post.
+        while ($fetch_prev_page) {
+            $stream = FacebookGraphAPIAccessor::rawApiRequest($next_api_request, true);
+            if (isset($stream->data) && is_array($stream->data) && sizeof($stream->data) > 0) {
+                $this->logger->logInfo(sizeof($stream->data[0]->values) .
+                " day(s) of active user data found on page ".$current_page_number, __METHOD__.','.__LINE__);
+
+                foreach ($stream->data as $period_group) {
+                    $period_length = $period_group->period;
+                    foreach ($period_group->values as $period) {
+                        // End times are midnight PST/PDT, e.g. 2011-10-17T07:00:00+0000
+                        $date = date('Y-m-d', strtotime($period->end_time) - 1);
+                        $active_users = $period->value;
+                        $active_users_dao->upsert($this->instance->id, $date, $period_length, $active_users);
+                    }
+                }
+                $starts = !empty($stream->data[0]->values) ? strtotime($stream->data[0]->values[0]->end_time) : 0;
+
+                // If there is still data available for dates since our first post
+                // that we haven't retrieved yet, or we want to repopulate all
+                // data, keep paging backwards.
+                if (isset($stream->paging->previous) && $first_post && $starts > $first_post &&
+                ($starts > $latest_captured || $recreate_all_history)) {
+                    $next_api_request = $stream->paging->previous;
+                    $current_page_number++;
+                } else {
+                    $fetch_prev_page = false;
+                }
+            } else {
+                $this->logger->logInfo("No Facebook active user data found for ID $id", __METHOD__.','.__LINE__);
+                $fetch_prev_page = false;
+            }
+            if (time() > $fetch_stop_time) {
+                $fetch_prev_page = false;
+                $this->logger->logUserInfo("Stopping this service user's crawl because it has exceeded max time of ".
+                ($this->max_crawl_time/60)." minute(s). ",__METHOD__.','.__LINE__);
+            }
+        }
+    }
+
+
     /**
      * Convert parsed JSON of a profile or page's posts into ThinkUp posts and users
      * @param Object $stream

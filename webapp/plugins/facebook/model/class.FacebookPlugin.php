@@ -88,6 +88,9 @@ class FacebookPlugin extends Plugin implements CrawlerPlugin, DashboardPlugin, P
             $crawler = new FacebookCrawler($instance, $access_token, $max_crawl_time);
             try {
                 $crawler->fetchPostsAndReplies();
+                if ($instance->network == 'facebook page') {
+                    $crawler->fetchActiveUsers();
+                }
             } catch (Exception $e) {
                 $logger->logUserError('EXCEPTION: '.$e->getMessage(), __METHOD__.','.__LINE__);
             }
