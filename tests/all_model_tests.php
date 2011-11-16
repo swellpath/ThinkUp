@@ -42,6 +42,7 @@ $model_tests->add(new TestOfFollowerCountMySQLDAO());
 $model_tests->add(new TestOfGroupMySQLDAO());
 $model_tests->add(new TestOfGroupMemberMySQLDAO());
 $model_tests->add(new TestOfGroupMembershipCountMySQLDAO());
+$model_tests->add(new TestOfActiveUsersCountMySQLDAO());
 $model_tests->add(new TestOfInstanceMySQLDAO());
 $model_tests->add(new TestOfInstaller());
 $model_tests->add(new TestOfInstallerMySQLDAO());
