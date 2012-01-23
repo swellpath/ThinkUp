@@ -3,7 +3,7 @@
  *
  * ThinkUp/webapp/_lib/controller/class.ThinkUpAuthController.php
  *
- * Copyright (c) 2009-2011 Gina Trapani
+ * Copyright (c) 2009-2012 Gina Trapani
  *
  * LICENSE:
  *
@@ -25,7 +25,7 @@
  *
  * Parent controller for all logged-in user-only actions
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Gina Trapani
+ * @copyright 2009-2012 Gina Trapani
  * @author Gina Trapani <ginatrapani[at]gmail[dot]com>
  *
  */
@@ -67,8 +67,7 @@ abstract class ThinkUpAuthController extends ThinkUpController {
             $controller = new DashboardController(true);
             return $controller->go();
         } else {
-            throw new Exception('You must <a href="'.$config->getValue('site_root_path').
-            'session/login.php">log in</a> to do this.');
+            throw new ControllerAuthException('You must log in to access this controller: ' . get_class($this)); 
         }
     }
 }

@@ -3,7 +3,7 @@
  *
  * ThinkUp/webapp/_lib/controller/class.AccountConfigurationController.php
  *
- * Copyright (c) 2009-2011 Terrance Shepherd, Gina Trapani
+ * Copyright (c) 2009-2012 Terrance Shepherd, Gina Trapani
  *
  * LICENSE:
  *
@@ -24,7 +24,7 @@
  * AccountConfiguration Controller
  *
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Terrance Shepherd, Gina Trapani
+ * @copyright 2009-2012 Terrance Shepherd, Gina Trapani
  * @author Terrance Shepehrd
  * @author Gina Trapani <ginatrapani[at]gmail[dot]com>
  *
@@ -46,6 +46,13 @@ class AccountConfigurationController extends ThinkUpAuthController {
 
     public function authControl() {
         $this->disableCaching();
+
+        //passsswd reset validation
+        $this->addHeaderCSS('assets/css/validate_password.css');
+        $this->addHeaderJavaScript('assets/js/jquery.validate.min.js');
+        $this->addHeaderJavaScript('assets/js/jquery.validate.password.js');
+        $this->addHeaderJavaScript('assets/js/validate_password.js');
+
         $webapp = Webapp::getInstance();
         $owner_dao = DAOFactory::getDAO('OwnerDAO');
         $invite_dao = DAOFactory::getDAO('InviteDAO');
@@ -133,7 +140,7 @@ class AccountConfigurationController extends ThinkUpAuthController {
                          FlashVars="id=clippy_12345&amp;copied=copied!&amp;copyto=copy to clipboard"
                          bgcolor="#D5F0FC"
                          wmode="opaque"/></object>
-                <br /> Good for one new registration. Expires in 7 days.', 'invite');
+                <br /> Good for one new registration. Expires in 7 days.', 'invite', true);
             } else {
                 $this->addErrorMessage("There was an error creating a new invite. Please try again.", 'invite');
             }

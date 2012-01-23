@@ -3,7 +3,7 @@
  *
  * ThinkUp/tests/TestOfTestController.php
  *
- * Copyright (c) 2009-2011 Gina Trapani, Guillaume Boudreau, Mark Wilkie
+ * Copyright (c) 2009-2012 Gina Trapani, Guillaume Boudreau, Mark Wilkie
  *
  * LICENSE:
  *
@@ -24,7 +24,7 @@
  *
  * TestController isn't a real ThinkUp controller, this is just a template for all Controller tests.
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Gina Trapani, Guillaume Boudreau, Mark Wilkie
+ * @copyright 2009-2012 Gina Trapani, Guillaume Boudreau, Mark Wilkie
  * @author Gina Trapani <ginatrapani[at]gmail[dot]com>
  */
 require_once dirname(__FILE__).'/init.tests.php';
@@ -138,6 +138,20 @@ class TestOfTestController extends ThinkUpUnitTestCase {
 
         $results = $controller->go();
         $this->assertEqual( $controller->getContentType(),'image/png');
+    }
+
+    /**
+     * Test add CSS 2 header
+     */
+    public function testAddCSS2Header() {
+        $config = Config::getInstance();
+        $controller = new TestController(true);
+        $_GET['css'] = true;
+        $results = $controller->go();
+        $this->assertEqual(count($controller->getHeaderCSS()), 1);
+        $css = $controller->getHeaderCSS();
+        $this->assertEqual($css[0], 'assets/css/bla.css');
+        $this->assertPattern('/assets\/css\/bla\.css"/', $results);
     }
 
     /**

@@ -3,7 +3,7 @@
  *
  * ThinkUp/webapp/_lib/controller/class.DashboardController.php
  *
- * Copyright (c) 2009-2011 Gina Trapani, Mark Wilkie
+ * Copyright (c) 2009-2012 Gina Trapani, Mark Wilkie
  *
  * LICENSE:
  *
@@ -26,7 +26,7 @@
  * The main controller which displays a given view for a give instance user.
  *
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Gina Trapani, Mark Wilkie
+ * @copyright 2009-2012 Gina Trapani, Mark Wilkie
  * @author Gina Trapani <ginatrapani[at]gmail[dot]com>
  *
  */
@@ -88,25 +88,29 @@ class DashboardController extends ThinkUpController {
             $this->loadDefaultDashboard();
         } else {
             $menu_item = $webapp->getDashboardMenuItem($this->view_name, $this->instance);
-            $this->addToView('data_template', $menu_item->view_template);
-            $this->addToView('display', $this->view_name);
-            $this->addToView('header', $menu_item->name);
-            $this->addToView('description', $menu_item->description);
-            $this->addToView('parent', $menu_item->parent);
+            if (isset($menu_item)) {
+                $this->addToView('data_template', $menu_item->view_template);
+                $this->addToView('display', $this->view_name);
+                $this->addToView('header', $menu_item->name);
+                $this->addToView('description', $menu_item->description);
+                $this->addToView('parent', $menu_item->parent);
 
-            $this->setPageTitle($this->instance->network_username.' on '.ucfirst($this->instance->network));
-            $page = (isset($_GET['page']) && is_numeric($_GET['page']))?$_GET['page']:1;
-            foreach ($menu_item->datasets as $dataset) {
-                if (array_search('#page_number#', $dataset->method_params) !== false) { //there's paging
-                    $this->addToView('next_page', $page+1);
-                    $this->addToView('last_page', $page-1);
+                $this->setPageTitle($this->instance->network_username.' on '.ucfirst($this->instance->network));
+                $page = (isset($_GET['page']) && is_numeric($_GET['page']))?$_GET['page']:1;
+                foreach ($menu_item->datasets as $dataset) {
+                    if (array_search('#page_number#', $dataset->method_params) !== false) { //there's paging
+                        $this->addToView('next_page', $page+1);
+                        $this->addToView('last_page', $page-1);
+                    }
+                    $this->addToView($dataset->name, $dataset->retrieveDataset($page));
+                    if (Session::isLoggedIn() && $dataset->isSearchable()) {
+                        $view_name = 'is_searchable';
+                        $this->addToView($view_name, true);
+                    }
+                    $this->view_mgr->addHelp($this->view_name, $dataset->getHelp());
                 }
-                $this->addToView($dataset->name, $dataset->retrieveDataset($page));
-                if (Session::isLoggedIn() && $dataset->isSearchable()) {
-                    $view_name = 'is_searchable';
-                    $this->addToView($view_name, true);
-                }
-                $this->view_mgr->addHelp($this->view_name, $dataset->getHelp());
+            } else {
+                $this->loadDefaultDashboard();
             }
         }
     }
@@ -122,13 +126,17 @@ class DashboardController extends ThinkUpController {
             $owner_dao = DAOFactory::getDAO('OwnerDAO');
             $owner = $owner_dao->getByEmail($this->getLoggedInUser());
             if (isset($_GET["u"]) && isset($_GET['n'])) {
-                $instance = $instance_dao->getByUsernameOnNetwork($_GET["u"], $_GET['n']);
-                $owner_instance_dao = DAOFactory::getDAO('OwnerInstanceDAO');
-                if ($owner_instance_dao->doesOwnerHaveAccessToInstance($owner, $instance)) {
-                    $this->instance = $instance;
+                $instance = $instance_dao->getByUsernameOnNetwork(stripslashes($_GET["u"]), $_GET['n']);
+                if (isset($instance)) {
+                    $owner_instance_dao = DAOFactory::getDAO('OwnerInstanceDAO');
+                    if ($owner_instance_dao->doesOwnerHaveAccessToInstance($owner, $instance)) {
+                        $this->instance = $instance;
+                    } else {
+                        $this->instance = null;
+                        $this->addErrorMessage("Insufficient privileges");
+                    }
                 } else {
-                    $this->instance = null;
-                    $this->addErrorMessage("Insufficient privileges");
+                    $this->addErrorMessage(stripslashes($_GET["u"])." on ".ucfirst($_GET['n']) ." is not in ThinkUp.");
                 }
             } else {
                 $this->instance = $instance_dao->getFreshestByOwnerId($owner->id);
@@ -136,11 +144,15 @@ class DashboardController extends ThinkUpController {
             $this->addToView('instances', $instance_dao->getByOwner($owner));
         } else {
             if (isset($_GET["u"]) && isset($_GET['n'])) {
-                $instance = $instance_dao->getByUsernameOnNetwork($_GET["u"], $_GET['n']);
-                if ($instance->is_public) {
-                    $this->instance = $instance;
+                $instance = $instance_dao->getByUsernameOnNetwork(stripslashes($_GET["u"]), $_GET['n']);
+                if (isset($instance)) {
+                    if ($instance->is_public) {
+                        $this->instance = $instance;
+                    } else {
+                        $this->addErrorMessage("Insufficient privileges");
+                    }
                 } else {
-                    $this->addErrorMessage("Insufficient privileges");
+                    $this->addErrorMessage(stripslashes($_GET["u"])." on ".ucfirst($_GET['n']) ." is not in ThinkUp.");
                 }
             }
             $this->addToView('instances', $instance_dao->getPublicInstances());

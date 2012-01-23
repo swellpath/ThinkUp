@@ -3,7 +3,7 @@
  *
  * ThinkUp/tests/WebTestOfCSRFToken.php
  *
- * Copyright (c) 2009-2011 Gina Trapani
+ * Copyright (c) 2009-2012 Gina Trapani
  *
  * LICENSE:
  *
@@ -23,7 +23,7 @@
  *
  * @author Mark Wilkie <mwilkie[at]gmail[dot]com>
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Gina Trapani
+ * @copyright 2009-2012 Gina Trapani
  */
 require_once dirname(__FILE__).'/init.tests.php';
 require_once THINKUP_ROOT_PATH.'webapp/_lib/extlib/simpletest/autorun.php';
@@ -70,9 +70,8 @@ class WebTestOfCSRFToken extends ThinkUpWebTestCase {
         $this->assertPattern("/var csrf_token = '" . self::TEST_CSRF_TOKEN . "';/");
 
         // look for password form token
-        $this->assertPattern('/<input name="oldpass" type="password" id="oldpass">' .
+        $this->assertPattern('/<input name="oldpass" type="password" id="oldpass" style="width:360px;">' .
         '\s+<input type="hidden" name="csrf_token" value="'. self::TEST_CSRF_TOKEN .'" \/>/m');
-
         // look for invite token
         $this->assertPattern('/<input type="hidden" name="csrf_token" value="'. self::TEST_CSRF_TOKEN .'" \/>' .
         '<input type="submit" id="login-save" name="invite"/');

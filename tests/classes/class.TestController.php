@@ -3,7 +3,7 @@
  *
  * ThinkUp/tests/classes/class.TestController.php
  *
- * Copyright (c) 2009-2011 Gina Trapani, Guillaume Boudreau, Mark Wilkie
+ * Copyright (c) 2009-2012 Gina Trapani, Guillaume Boudreau, Mark Wilkie
  *
  * LICENSE:
  *
@@ -24,7 +24,7 @@
  * Test Controller
  * Test controller to try the ThinkUpController abstract class and Controller interface
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Gina Trapani, Guillaume Boudreau, Mark Wilkie
+ * @copyright 2009-2012 Gina Trapani, Guillaume Boudreau, Mark Wilkie
  * @author Gina Trapani <ginatrapani[at]gmail[dot]com>
  */
 class TestController extends ThinkUpController {
@@ -37,10 +37,13 @@ class TestController extends ThinkUpController {
             $this->setContentType('text/plain');
         } else if (isset($_GET['png'])) {
             $this->setContentType('image/png');
+        } else if (isset($_GET['css'])) {
+            $this->addHeaderCSS('assets/css/bla.css');
+            $this->setViewTemplate('session.login.tpl');
         }
         if (isset($_GET['throwexception'])) {
             throw new Exception("Testing exception handling!");
-        } else if (!isset($_GET['json'])) {
+        } else if (!isset($_GET['json']) && ! isset($_GET['css'])) {
             $this->setViewTemplate('testme.tpl');
             $this->addToView('test', 'Testing, testing, 123');
         }

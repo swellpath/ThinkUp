@@ -3,7 +3,7 @@
  *
  * ThinkUp/webapp/_lib/model/class.SmartyThinkUp.php
  *
- * Copyright (c) 2009-2011 Gina Trapani
+ * Copyright (c) 2009-2012 Gina Trapani
  *
  * LICENSE:
  *
@@ -26,7 +26,7 @@
  * Configures and initalizes Smarty per ThinkUp's configuration.
  *
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Gina Trapani
+ * @copyright 2009-2012 Gina Trapani
  * @author Gina Trapani <ginatrapani[at]gmail[dot]com>
  *
  */
@@ -144,8 +144,32 @@ class SmartyThinkUp extends Smarty {
      * @param str $msg
      * @param str $field Defaults to null
      */
-    public function addErrorMessage($msg, $field=null) {
+    public function addErrorMessage($msg, $field=null, $disable_xss=false) {
         $this->addMessage(self::ERROR_MESSAGE, $msg, $field);
+        if ($disable_xss === true) {
+            $this->disableXSSMessageFilter(self::ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Disable XSS filtering for a message type
+     * @param int $msg_type
+     */
+    public function disableXSSMessageFilter($msg_type) {
+        switch ($msg_type) {
+            case self::SUCCESS_MESSAGE:
+                $this->assign('success_msg_no_xss_filter', true);
+                break;
+            case self::INFO_MESSAGE:
+                $this->assign('info_msg_no_xss_filter', true);
+                break;
+            case self::ERROR_MESSAGE:
+                $this->assign('error_msg_no_xss_filter', true);
+                break;
+            default:
+                error_log("bad message id passed to disableXSSMessageFilter()");
+                break;
+        }
     }
 
     /**
@@ -154,8 +178,11 @@ class SmartyThinkUp extends Smarty {
      * @param str $msg
      * @param str $field Defaults to null
      */
-    public function addInfoMessage($msg, $field=null) {
-        $this->addMessage(self::INFO_MESSAGE, $msg, $field);
+    public function addInfoMessage($msg, $field=null, $disable_xss=false) {
+        $this->addMessage(self::INFO_MESSAGE, $msg, $field, $disable_xss);
+        if ($disable_xss === true) {
+            $this->disableXSSMessageFilter(self::INFO_MESSAGE);
+        }
     }
 
     /**
@@ -164,8 +191,11 @@ class SmartyThinkUp extends Smarty {
      * @param str $msg
      * @param str $field Defaults to null
      */
-    public function addSuccessMessage($msg, $field=null) {
-        $this->addMessage(self::SUCCESS_MESSAGE, $msg, $field);
+    public function addSuccessMessage($msg, $field=null, $disable_xss=false) {
+        $this->addMessage(self::SUCCESS_MESSAGE, $msg, $field, $disable_xss);
+        if ($disable_xss === true) {
+            $this->disableXSSMessageFilter(self::SUCCESS_MESSAGE);
+        }
     }
 
     /**

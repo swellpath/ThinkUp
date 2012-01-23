@@ -3,7 +3,7 @@
  *
  * ThinkUp/webapp/_lib/controller/class.RSSController.php
  *
- * Copyright (c) 2009-2011 Guillaume Boudreau
+ * Copyright (c) 2009-2012 Guillaume Boudreau
  *
  * LICENSE:
  *
@@ -27,7 +27,7 @@
  * This will allow users to crawl their ThinkUp instances by subscribing to their ThinkUp RSS feed in any RSS reader.
  *
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Guillaume Boudreau
+ * @copyright 2009-2012 Guillaume Boudreau
  * @author Guillaume Boudreau <gboudreau@pommepause.com>
  */
 class RSSController extends ThinkUpAuthAPIController {
@@ -52,11 +52,13 @@ class RSSController extends ThinkUpAuthAPIController {
 
         $crawler_launched = false;
         $instance_dao = DAOFactory::getDAO('InstanceDAO');
-        $freshest_instance = $instance_dao->getInstanceFreshestOne();
-        $crawler_last_run = strtotime($freshest_instance->crawler_last_run);
-        if ($crawler_last_run < time() - $rss_crawler_refresh_rate*60) {
-            $email = $this->getLoggedInUser();
-            $owner = parent::getOwner($email);
+        $email = $this->getLoggedInUser();
+        $owner = parent::getOwner($email);
+        $freshest_instance = $instance_dao->getFreshestByOwnerId($owner->id);
+        if ($freshest_instance) {
+            $crawler_last_run = strtotime($freshest_instance->crawler_last_run);
+        }
+        if ($freshest_instance && $crawler_last_run < time() - $rss_crawler_refresh_rate*60) {
             $crawler_run_url = $base_url.'run.php?'.sprintf('un=%s&as=%s', $email, $owner->api_key);
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $crawler_run_url);

@@ -3,7 +3,7 @@
  *
  * ThinkUp/webapp/_lib/controller/class.LoginController.php
  *
- * Copyright (c) 2009-2011 Gina Trapani
+ * Copyright (c) 2009-2012 Gina Trapani
  *
  * LICENSE:
  *
@@ -25,7 +25,7 @@
  *
  * @TODO Build mechanism for redirecting user to originally-requested logged-in only page.
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Gina Trapani
+ * @copyright 2009-2012 Gina Trapani
  * @author Gina Trapani <ginatrapani[at]gmail[dot]com>
  *
  */
@@ -74,7 +74,8 @@ class LoginController extends ThinkUpController {
                             $error_msg .= $owner->account_status .
                             '. <a href="forgot.php">Reset your password.</a>';
                         }
-                        $this->addErrorMessage($error_msg);
+                        $disable_xss = true;
+                        $this->addErrorMessage($error_msg, null, $disable_xss);
                         return $this->generateView();
                         // If the credentials supplied by the user are incorrect
                     } elseif (!$owner_dao->isOwnerAuthorized($user_email, $_POST['pwd']) ) {
@@ -87,7 +88,8 @@ class LoginController extends ThinkUpController {
                             '. <a href="forgot.php">Reset your password.</a>';
                         }
                         $owner_dao->incrementFailedLogins($user_email);
-                        $this->addErrorMessage($error_msg);
+                        $disable_xss = true;
+                        $this->addErrorMessage($error_msg, null, $disable_xss);
                         return $this->generateView();
                     } else {
                         // user has logged in sucessfully this sets variables in the session

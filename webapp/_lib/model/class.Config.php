@@ -3,7 +3,7 @@
  *
  * ThinkUp/webapp/_lib/model/class.Config.php
  *
- * Copyright (c) 2009-2011 Mark Wilkie, Gina Trapani
+ * Copyright (c) 2009-2012 Mark Wilkie, Gina Trapani
  *
  * LICENSE:
  *
@@ -37,7 +37,7 @@
  *
  * @package     ThinkUp
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Gina Trapani, Guillaume Boudreau
+ * @copyright 2009-2012 Gina Trapani, Guillaume Boudreau
  * @author      Gina Trapani <ginatrapani[at]gmail[dot]com>
  * @author      Mark Wilkie
  */
@@ -71,8 +71,7 @@ class Config {
                 $this->config['THINKUP_VERSION_REQUIRED'] =
                 array('php' => $THINKUP_VERSION_REQUIRED['php'], 'mysql' => $THINKUP_VERSION_REQUIRED['mysql']);
             } else {
-                throw new Exception('ThinkUp\'s configuration file does not exist! Try <a href="'.THINKUP_BASE_URL.
-                'install/">installing ThinkUp.</a>');
+                throw new ConfigurationException("ThinkUp's configuration file does not exist! Try installing ThinkUp.");
             }
         }
     }

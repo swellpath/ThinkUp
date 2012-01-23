@@ -3,7 +3,7 @@
  *
  * ThinkUp/webapp/_lib/controller/class.ThinkUpController.php
  *
- * Copyright (c) 2009-2011 Gina Trapani
+ * Copyright (c) 2009-2012 Gina Trapani
  *
  * LICENSE:
  *
@@ -26,7 +26,7 @@
  * The parent class of all ThinkUp webapp controllers.
  *
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Gina Trapani
+ * @copyright 2009-2012 Gina Trapani
  * @author Gina Trapani <ginatrapani[at]gmail[dot]com>
  */
 
@@ -59,7 +59,11 @@ abstract class ThinkUpController {
      * @var araray
      */
     protected $header_scripts = array ();
-
+    /**
+     *
+     * @var araray
+     */
+    protected $header_css = array ();
     /**
      *
      * @var array
@@ -192,7 +196,10 @@ abstract class ThinkUpController {
         if ( count($this->header_scripts) > 0) {
             $this->addToView('header_scripts', $this->header_scripts);
         }
-
+        // add header CSS if defined
+        if ( count($this->header_css) > 0) {
+            $this->addToView('header_css', $this->header_css);
+        }
         // add CSRF token if enabled and defined
         if ($this->view_csrf_token) {
             $csrf_token = Session::getCSRFToken();
@@ -353,7 +360,23 @@ abstract class ThinkUpController {
     public function addHeaderJavaScript($script) {
         array_push($this->header_scripts, $script);
     }
-
+    /**
+     * Add CSS to header
+     *
+     * @param str CSS path
+     */
+    public function addHeaderCSS($css) {
+        array_push($this->header_css, $css);
+    }
+    /**
+     * get CSS scripts
+     *
+     * @return array List of CSS files
+     */
+    public function getHeaderCSS() {
+        return $this->header_css;
+    }
+    
     /**
      * Add data to view template engine for rendering
      *
@@ -374,7 +397,6 @@ abstract class ThinkUpController {
     public function go() {
         try {
             $this->initalizeApp();
-
             // are we in need of a database migration?
             $classname = get_class($this);
             if ($classname != 'InstallerController' && $classname != 'BackupController' &&
@@ -402,30 +424,56 @@ abstract class ThinkUpController {
                     return $results;
                 }
             }
-        } catch (Exception $e) {
-            //Explicitly set TZ (before we have user's choice) to avoid date() warning about using system settings
+        } catch (ControllerAuthException $e) {
             Utils::setDefaultTimezonePHPini();
-            $content_type = $this->content_type;
-            if (strpos($content_type, ';') !== false) {
-                $exploded = explode(';', $content_type);
-                $content_type = array_shift($exploded);
-            }
-            switch ($content_type) {
-                case 'application/json':
-                    $this->setViewTemplate('500.json.tpl');
-                    break;
-                case 'text/plain':
-                    $this->setViewTemplate('500.txt.tpl');
-                    break;
-                default:
-                    $this->setViewTemplate('500.tpl');
-            }
+            $this->setErrorTemplateState();
             $this->addToView('error_type', get_class($e));
-            $this->addErrorMessage($e->getMessage());
+            $config = Config::getInstance();
+            $message = 'You must <a href="'.$config->getValue('site_root_path').
+            'session/login.php">log in</a> to do this.';
+            $this->addErrorMessage($message, null, true);
+            return $this->generateView();
+        } catch (ConfigurationException $e) {
+            $this->setErrorTemplateState();
+            $this->addToView('error_type', get_class($e));
+            $message = 'ThinkUp\'s configuration file does not exist! Try <a href="'.THINKUP_BASE_URL.
+                'install/">installing ThinkUp.</a>';
+            $this->addErrorMessage($message, null, true);
+            return $this->generateView();
+        } catch (Exception $e) {
+            Utils::setDefaultTimezonePHPini();
+            $this->setErrorTemplateState();
+            $this->addToView('error_type', get_class($e));
+            $disable_xss = false;
+            // if we are an installer exception, don't filter XSS, we have markup, and we trust this content
+            if (get_class($e) == 'InstallerException') {
+                $disable_xss = true;
+            }
+            $this->addErrorMessage($e->getMessage(), null, $disable_xss);
             return $this->generateView();
         }
     }
 
+    /**
+     * set proper error message and template
+     */
+    private function setErrorTemplateState() {
+        $content_type = $this->content_type;
+        if (strpos($content_type, ';') !== false) {
+            $exploded = explode(';', $content_type);
+            $content_type = array_shift($exploded);
+        }
+        switch ($content_type) {
+            case 'application/json':
+                $this->setViewTemplate('500.json.tpl');
+                break;
+            case 'text/plain':
+                $this->setViewTemplate('500.txt.tpl');
+                break;
+            default:
+                $this->setViewTemplate('500.tpl');
+        }
+    }
     /**
      * Initalize app
      * Load config file and required plugins
@@ -507,10 +555,11 @@ abstract class ThinkUpController {
      * to be page-level.
      * @param str $msg
      * @param str $field Defaults to null for page-level messages.
+     * @param bool $disable_xss Disable HTML encoding tags, defaults to false
      */
-    public function addErrorMessage($msg, $field=null) {
+    public function addErrorMessage($msg, $field=null, $disable_xss=false) {
         $this->disableCaching();
-        $this->view_mgr->addErrorMessage($msg, $field);
+        $this->view_mgr->addErrorMessage($msg, $field, $disable_xss);
     }
 
     /**
@@ -519,10 +568,11 @@ abstract class ThinkUpController {
      * to be page-level.
      * @param str $msg
      * @param str $field Defaults to null for page-level messages.
+     * @param bool $disable_xss Disable HTML encoding tags, defaults to false
      */
-    public function addSuccessMessage($msg, $field=null) {
+    public function addSuccessMessage($msg, $field=null, $disable_xss=false) {
         $this->disableCaching();
-        $this->view_mgr->addSuccessMessage($msg, $field);
+        $this->view_mgr->addSuccessMessage($msg, $field, $disable_xss);
     }
 
     /**
@@ -531,10 +581,11 @@ abstract class ThinkUpController {
      * to be page-level.
      * @param str $msg
      * @param str $field Defaults to null for page-level messages.
+     * @param bool $disable_xss Disable HTML encoding tags, defaults to false
      */
-    public function addInfoMessage($msg, $field=null) {
+    public function addInfoMessage($msg, $field=null, $disable_xss=false) {
         $this->disableCaching();
-        $this->view_mgr->addInfoMessage($msg, $field);
+        $this->view_mgr->addInfoMessage($msg, $field, $disable_xss);
     }
 
     /**

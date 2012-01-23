@@ -3,7 +3,7 @@
  *
  * ThinkUp/tests/TestOfRegisterController.php
  *
- * Copyright (c) 2009-2011 Terrance Shepherd, Gina Trapani
+ * Copyright (c) 2009-2012 Terrance Shepherd, Gina Trapani
  *
  * LICENSE:
  *
@@ -23,7 +23,7 @@
  * Test of RegisterController
  *
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Terrance, Shepherd, Gina Trapani
+ * @copyright 2009-2012 Terrance, Shepherd, Gina Trapani
  * @author Gina Trapani <ginatrapani[at]gmail[dot]com>
  * @author Terrance Shepherd
  *
@@ -315,7 +315,7 @@ https:\/\/mytestthinkup'.str_replace('/', '\/', $site_root_path).'session\/activ
         $results = $controller->go();
 
         $this->debug($results);
-        $this->assertPattern('/Welcome, VIP! You\'ve been invited to register on this ThinkUp installation./',
+        $this->assertPattern('/Welcome, VIP! You&#39;ve been invited to register on this ThinkUp installation./',
         $results);
     }
 

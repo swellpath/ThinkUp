@@ -3,7 +3,7 @@
  *
  * ThinkUp/webapp/_lib/controller/class.RegisterController.php
  *
- * Copyright (c) 2009-2011 Terrance Shepherd, Gina Trapani
+ * Copyright (c) 2009-2012 Terrance Shepherd, Gina Trapani
  *
  * LICENSE:
  *
@@ -25,7 +25,7 @@
  * Registers new ThinkUp users.
  * This controller is not used when the installer registers the first user. Class.InstallerController handles that
  * @license http://www.gnu.org/licenses/gpl.html
- * @copyright 2009-2011 Terrance Shepherd, Gina Trapani
+ * @copyright 2009-2012 Terrance Shepherd, Gina Trapani
  * @author Terrance Shepherd
  * @author Gina Trapani <ginatrapani[at]gmail[dot]com>
  *
@@ -53,6 +53,12 @@ class RegisterController extends ThinkUpController {
             $controller = new DashboardController(true);
             return $controller->go();
         } else {
+            // register form validation
+            $this->addHeaderCSS('assets/css/validate_password.css');
+            $this->addHeaderJavaScript('assets/js/jquery.validate.min.js');
+            $this->addHeaderJavaScript('assets/js/jquery.validate.password.js');
+            $this->addHeaderJavaScript('assets/js/validate_password.js');
+
             $config = Config::getInstance();
             $is_registration_open = $config->getValue('is_registration_open');
 
@@ -72,8 +78,9 @@ class RegisterController extends ThinkUpController {
             $has_been_registered = false;
             if ( !$is_registration_open && !$is_invite_code_valid ){
                 $this->addToView('closed', true);
+                $disable_xss = true;
                 $this->addErrorMessage('<p>Sorry, registration is closed on this ThinkUp installation.</p>'.
-                '<p><a href="http://thinkupapp.com">Install ThinkUp on your own server.</a></p>');
+                '<p><a href="http://thinkupapp.com">Install ThinkUp on your own server.</a></p>', null, $disable_xss);
             } else {
                 $owner_dao = DAOFactory::getDAO('OwnerDAO');
                 $this->addToView('closed', false);
