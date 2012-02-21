@@ -193,7 +193,7 @@ class FacebookCrawler {
     }
 
     /*
-     * Fetch and save the active user counts
+     * Fetch and save the active (engaged) user counts
      */
     public function fetchActiveUsers($recreate_all_history = false) {
         $id = $this->instance->network_user_id;
@@ -203,7 +203,7 @@ class FacebookCrawler {
         $current_page_number = 1;
 
         // We can get up to 35 days (3024000 seconds) of data at once; getting default of 3 days for now
-        $next_api_request = 'https://graph.facebook.com/' .$id. '/insights/page_active_users/?access_token='
+        $next_api_request = 'https://graph.facebook.com/' .$id. '/insights/page_engaged_users/?access_token='
         . $this->access_token;
 
         //Cap crawl time for very busy pages with thousands of likes/comments
