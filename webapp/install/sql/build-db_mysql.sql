@@ -488,7 +488,7 @@ CREATE TABLE tu_users (
 -- Insert DB Version
 --
 INSERT INTO tu_options (namespace, option_name, option_value, last_updated, created)
-VALUES ('application_options', 'database_version', '1.0', NOW(), NOW()); 
+VALUES ('application_options', 'database_version', '1.0.2', NOW(), NOW()); 
 
 --
 -- Insert default plugin(s)
